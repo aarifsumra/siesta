@@ -21,16 +21,16 @@ class _GitHubAPI {
             // For more info about how Siesta decides whether to make a network call,
             // and which state updates it broadcasts to the app:
 
-            //LogCategory.enabled = LogCategory.common
+            //LogCategory.enabled = .common
 
             // For the gory details of what Siesta’s up to:
 
-            //LogCategory.enabled = LogCategory.all
+            //LogCategory.enabled = .detailed
 
             // To dump all requests and responses:
             // (Warning: may cause Xcode console overheating)
 
-            //LogCategory.enabled = LogCategory.all
+            //LogCategory.enabled = .all
         #endif
 
         // –––––– Global configuration ––––––
