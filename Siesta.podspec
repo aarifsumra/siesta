@@ -77,9 +77,11 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "Tools" do |s|
+    s.ios.deployment_target = "9.0"  # for CommonCryptoModule
     s.source_files = "Source/SiestaTools/**/*"
     s.exclude_files = "**/Info*.plist"
     s.dependency "Siesta/Core"
+    s.dependency "CommonCryptoModule"
   end
 
   s.subspec "UI" do |s|
