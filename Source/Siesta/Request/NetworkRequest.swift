@@ -17,9 +17,9 @@ internal final class NetworkRequestDelegate: RequestDelegate
     internal let requestDescription: String
 
     // Networking
-    private let requestBuilder: () -> URLRequest      // so repeated() can re-read config
+    private let requestBuilder: () -> URLRequest  // so repeated() can re-read config
     private let underlyingRequest: URLRequest
-    internal var networking: RequestNetworking?       // present only after start()
+    internal var networking: RequestNetworking?  // present only after start()
 
     // Progress
     private var progressComputation: RequestProgressComputation
@@ -90,9 +90,9 @@ internal final class NetworkRequestDelegate: RequestDelegate
         {
         DispatchQueue.mainThreadPrecondition()
 
-        debugLog(.network, ["Response: ", underlyingResponse?.statusCode ?? error, "←", requestDescription])
-        debugLog(.networkDetails, ["Raw response headers:", underlyingResponse?.allHeaderFields])
-        debugLog(.networkDetails, ["Raw response body:", body?.count ?? 0, "bytes"])
+        log(.network, ["Response: ", underlyingResponse?.statusCode ?? error, "←", requestDescription])
+        log(.networkDetails, ["Raw response headers:", underlyingResponse?.allHeaderFields])
+        log(.networkDetails, ["Raw response body:", body?.count ?? 0, "bytes"])
 
         let responseInfo = interpretResponse(underlyingResponse, body, error)
 

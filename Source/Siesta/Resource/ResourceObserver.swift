@@ -267,10 +267,10 @@ public extension Resource
         {
         cleanDefunctObservers(force: true)
 
-        debugLog(.observers, [self, "sending", event, "event to", observers.count, "observer" + (observers.count == 1 ? "" : "s")])
+        log(.observers, [self, "sending", event, "event to", observers.count, "observer" + (observers.count == 1 ? "" : "s")])
         for entry in observers.values
             {
-            debugLog(.observers, ["  ↳", event, "→", entry.observer])
+            log(.observers, ["  ↳", event, "→", entry.observer])
             entry.observer?.resourceChanged(self, event: event)
             }
         }
@@ -347,7 +347,7 @@ internal class ObserverEntry: CustomStringConvertible
 
     deinit
         {
-        debugLog(.observers, ["removing observer of", resource, "whose owners are all gone:", self])
+        log(.observers, ["removing observer of", resource, "whose owners are all gone:", self])
         observer?.stoppedObserving(resource: resource)
         }
 

@@ -57,7 +57,7 @@ public enum LogCategory
 private let maxCategoryNameLength = LogCategory.all.map { Int(String(describing: $0).count) }.max() ?? 0
 
 /// Inject your custom logger to do something other than print to stdout.
-public var logger: (LogCategory, String) -> Void =
+public var logMessageHandler: (LogCategory, String) -> Void =
     {
     let paddedCategory = String(describing: $0).padding(toLength: maxCategoryNameLength, withPad: " ", startingAt: 0)
     var threadName = ""
@@ -77,8 +77,8 @@ public var logger: (LogCategory, String) -> Void =
     print(prefix + indentedMessage)
     }
 
-internal func debugLog(_ category: LogCategory, _ messageParts: @autoclosure () -> [Any?])
+public func log(_ category: LogCategory, _ messageParts: @autoclosure () -> [Any?])
     {
     if LogCategory.enabled.contains(category)
-        { logger(category, debugStr(messageParts())) }
+        { logMessageHandler(category, debugStr(messageParts())) }
     }

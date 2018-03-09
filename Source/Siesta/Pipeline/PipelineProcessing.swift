@@ -31,8 +31,8 @@ internal extension Pipeline
             {
             let result = Pipeline.processAndCache(rawResponse, using: stagesAndEntries)
 
-            debugLog(.pipeline,       ["  └╴Response after pipeline:", result.summary()])
-            debugLog(.networkDetails, ["    Details:", result.dump("      ")])
+            log(.pipeline,       ["  └╴Response after pipeline:", result.summary()])
+            log(.networkDetails, ["    Details:", result.dump("      ")])
 
             return result
             }
@@ -55,7 +55,7 @@ internal extension Pipeline
             if case .success(let entity) = output,
                let cacheEntry = cacheEntry
                 {
-                debugLog(.cache, ["  ├╴Caching entity with", type(of: entity.content), "content in", cacheEntry])
+                log(.cache, ["  ├╴Caching entity with", type(of: entity.content), "content in", cacheEntry])
                 cacheEntry.write(entity)
                 }
 
@@ -85,7 +85,7 @@ internal extension Pipeline
             {
             if let result = cacheEntry?.read()
                 {
-                debugLog(.cache, ["Cache hit for", cacheEntry])
+                log(.cache, ["Cache hit for", cacheEntry])
 
                 let processed = Pipeline.processAndCache(
                     .success(result),
@@ -94,7 +94,7 @@ internal extension Pipeline
                 switch processed
                     {
                     case .failure:
-                        debugLog(.cache, ["Error processing cached entity; will ignore cached value. Error:", processed])
+                        log(.cache, ["Error processing cached entity; will ignore cached value. Error:", processed])
 
                     case .success(let entity):
                         return entity

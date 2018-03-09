@@ -64,18 +64,18 @@ private final class LiveRequest: Request, RequestCompletionHandler, CustomDebugS
 
         guard !isStarted else
             {
-            debugLog(.networkDetails, [delegate.requestDescription, "already started"])
+            log(.networkDetails, [delegate.requestDescription, "already started"])
             return self
             }
 
         guard !isCancelled else
             {
-            debugLog(.network, [delegate.requestDescription, "will not start because it was already cancelled"])
+            log(.network, [delegate.requestDescription, "will not start because it was already cancelled"])
             return self
             }
 
         isStarted = true
-        debugLog(.network, [delegate.requestDescription])
+        log(.network, [delegate.requestDescription])
 
         delegate.startUnderlyingOperation(completionHandler: self)
 
@@ -92,11 +92,11 @@ private final class LiveRequest: Request, RequestCompletionHandler, CustomDebugS
 
         guard !isCompleted else
             {
-            debugLog(.network, ["cancel() called but request already completed:", delegate.requestDescription])
+            log(.network, ["cancel() called but request already completed:", delegate.requestDescription])
             return
             }
 
-        debugLog(.network, ["Cancelled", delegate.requestDescription])
+        log(.network, ["Cancelled", delegate.requestDescription])
 
         delegate.cancelUnderlyingOperation()
 
@@ -137,7 +137,7 @@ private final class LiveRequest: Request, RequestCompletionHandler, CustomDebugS
 
         if !existingResponse.isCancellation
             {
-            debugLog(.network,
+            log(.network,
                 [
                 "WARNING: Received response for request that was already completed:", delegate.requestDescription,
                 "This may indicate a bug in the NetworkingProvider you are using, or in Siesta.",
@@ -151,7 +151,7 @@ private final class LiveRequest: Request, RequestCompletionHandler, CustomDebugS
             // Sometimes the network layer sends a cancellation error. That’s not of interest if we already knew
             // we were cancelled. If we received any other response after cancellation, log that we ignored it.
 
-            debugLog(.networkDetails,
+            log(.networkDetails,
                 [
                 "Received response, but request was already cancelled:", delegate.requestDescription,
                 "\n    New response:", newResponse
