@@ -147,7 +147,7 @@ public protocol Request: class
     /**
       Send the same request again, returning a new `Request` instance for the new attempt.
 
-      The return request is not already started. You must call `start()` when you are ready for it to begin.
+      The return request is **not already started**. You must call `start()` when you are ready for it to begin.
 
       - Warning:
           Use with caution! Repeating a failed request for any HTTP method other than GET is potentially unsafe,
@@ -176,7 +176,7 @@ public protocol Request: class
 
           After calling `repeated()`, you will need to attach new callbacks to the new request. Otherwise nobody will
           hear about the response when it arrives. (Q: If a request completes and nobody’s around to hear it, does it
-          make a response? A: Yes, because it still uses bandwidth.)
+          make a response? A: Yes, because it still uses bandwidth, and potentially changes state on the server.)
 
           By the same principle, repeating a `load()` request will trigger a second network call, but will not cause the
           resource’s state to be updated again with the result.
@@ -222,7 +222,7 @@ public struct ResponseInfo
     /// The result of a `Request`.
     public var response: Response
 
-    /// Indicates whether `response` is newly received data, or a previous response reused.
+    /// Indicates whether `response` is newly received data, or the resource’s existing data reused.
     /// Used to distinguish `ResourceEvent.newData` from `ResourceEvent.notModified`.
     public var isNew: Bool
 

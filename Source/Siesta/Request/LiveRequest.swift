@@ -8,9 +8,12 @@
 
 extension Resource
     {
-    public static func request(using delegate: RequestDelegate) -> Request
+    public static func request(using delegate: RequestDelegate, started: Bool = true) -> Request
         {
-        return LiveRequest(delegate: delegate)
+        let req = LiveRequest(delegate: delegate)
+        if(started)
+            { req.start() }
+        return req
         }
     }
 
@@ -175,7 +178,7 @@ private final class LiveRequest: Request, RequestCompletionHandler, CustomDebugS
 
     func repeated() -> Request
         {
-        return Resource.request(using: delegate.repeated())
+        return Resource.request(using: delegate.repeated(), started: false)
         }
 
     // MARK: Debug

@@ -55,10 +55,9 @@ extension Request
     */
     public func chained(whenCompleted callback: @escaping (ResponseInfo) -> RequestChainAction) -> Request
         {
-        let chain = Resource.request(using: RequestChainDelgate(wrapping: self, whenCompleted: callback))
-        if isStarted
-            { chain.start() }
-        return chain
+        return Resource.request(
+            using: RequestChainDelgate(wrapping: self, whenCompleted: callback),
+            started: self.isStarted)
         }
     }
 
