@@ -16,7 +16,7 @@ class _GitHubAPI {
     fileprivate init() {
         #if DEBUG
             // Bare-bones logging of which network calls Siesta makes:
-            LogCategory.enabled = .detailed
+//            LogCategory.enabled = .detailed
 
             // For more info about how Siesta decides whether to make a network call,
             // and which state updates it broadcasts to the app:
@@ -37,17 +37,19 @@ class _GitHubAPI {
 
         let jsonDecoder = JSONDecoder()
 
-
-RemoteImageView.defaultImageService.configure
-{
-$0.pipeline[.rawData].cacheUsing(
-    try! FileCache<Data>(poolName: "images", userIdentity: Data()))
-}
-
+        RemoteImageView.defaultImageService.configure
+            {
+            $0.pipeline[.rawData].cacheUsing(
+                try! FileCache<Data>(
+                    poolName: "images",
+                    partition: .sharedByAllUsers))
+            }
 
         service.configure {
             $0.pipeline[.rawData].cacheUsing(
-                try! FileCache<Data>(poolName: "api.github.com", userIdentity: self.username?.data(using: String.Encoding.utf8)))
+                try! FileCache<Data>(
+                    poolName: "api.github.com",
+                    partition: .perUser(identifiedBy: self.username)))
 
             // Custom transformers can change any response into any other — including errors.
             // Here we replace the default error message with the one provided by the GitHub API (if present).

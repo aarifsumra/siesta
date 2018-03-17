@@ -17,32 +17,55 @@ private typealias File = URL
 
 private let fileCacheFormatVersion: [UInt8] = [0]
 
+private let decoder = PropertyListDecoder()
+private let encoder: PropertyListEncoder =
+    {
+    let encoder = PropertyListEncoder()
+    encoder.outputFormat = .binary
+    return encoder
+    }()
+
 public struct FileCache<ContentType>: EntityCache
     where ContentType: Codable
     {
     private let keyPrefix: Data
     private let cacheDir: File
 
-    private let encoder = PropertyListEncoder()
-    private let decoder = PropertyListDecoder()
-
-    public init<T>(poolName: String = "Default", userIdentity: T?) throws
-        where T: Encodable
+    public init(poolName: String = "Default", partition: PartitioningStrategy) throws
         {
-        encoder.outputFormat = .binary
-
-        self.keyPrefix = try
-            fileCacheFormatVersion           // prevents us from parsing old cache entries using some new future format
-             + encoder.encode(userIdentity)  // prevents one user from seeing another’s cached requests
-             + [0]                           // separator for URL
-
-        cacheDir = try
-            FileManager.default.url(
-                for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-            .appendingPathComponent(Bundle.main.bundleIdentifier ?? "")
+        let cacheDir = try FileManager.default
+            .url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            .appendingPathComponent(Bundle.main.bundleIdentifier ?? "")  // no bundle → directly inside cache dir
             .appendingPathComponent("Siesta")
             .appendingPathComponent(poolName)
         try FileManager.default.createDirectory(at: cacheDir, withIntermediateDirectories: true)
+
+        self.init(inDirectory: cacheDir, partition: partition)
+        }
+
+    public init(inDirectory cacheDir: URL, partition: PartitioningStrategy)
+        {
+        self.cacheDir = cacheDir
+        keyPrefix =
+            fileCacheFormatVersion  // prevents us from parsing old cache entries using some new future format
+             + partition.data       // prevents one user from seeing another’s cached requests
+             + [0]                  // separator for URL
+        }
+
+    public struct PartitioningStrategy
+        {
+        fileprivate let data: Data
+
+        public static var sharedByAllUsers: PartitioningStrategy
+            { return PartitioningStrategy(data: Data()) }
+
+        public static func perUser<T>(identifiedBy partitionID: T) throws -> PartitioningStrategy
+            where T: Codable
+            {
+            return PartitioningStrategy(data:
+                try encoder.encode([partitionID])
+                    .shortenWithSHA256)
+            }
         }
 
     // MARK: - Keys and filenames
@@ -131,6 +154,11 @@ private extension Data
         _ = withUnsafeBytes
             { CC_SHA256($0, CC_LONG(count), &hash) }
         return Data(hash)
+        }
+
+    var shortenWithSHA256: Data
+        {
+        return count > 32 ? sha256 : self
         }
 
     var urlSafeBase64EncodedString: String
